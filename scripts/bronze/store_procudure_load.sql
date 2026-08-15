@@ -18,7 +18,39 @@ Usage:
 */
  
 -- Clear existing rows so this script is safe to re-run
-TRUNCATE TABLE bronze.olx_apartments_info;
- 
-\copy bronze.olx_apartments_info FROM './dataset/database.csv' WITH (FORMAT CSV, HEADER);
- 
+CREATE OR REPLACE PROCEDURE bronze.load_bronze()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    start_time TIMESTAMP WITH TIME ZONE := NOW();
+    end_time TIMESTAMP WITH TIME ZONE;
+BEGIN
+    start_time := NOW();
+    RAISE NOTICE'=========================';
+    RAISE NOTICE'Loading Bronze Layer';
+    RAISE NOTICE'=========================';
+
+    
+    TRUNCATE TABLE bronze.olx_apartments_info;
+
+    COPY bronze.olx_apartments_info
+    FROM '/Users/javohireshonov/Desktop/Study/Projects/DataWarehouse/dataset/database.csv'
+    WITH (
+        FORMAT CSV,
+        HEADER
+    );
+    end_time := NOW();
+    RAISE NOTICE 'Load duration: % seconds',
+    EXTRACT(EPOCH FROM (end_time - start_time));
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error loading bronze layer: %', SQLERRM;
+END;
+$$;
+
+CALL bronze.load_bronze()
+
+
+SELECT *
+FROM bronze.olx_apartments_info
+LIMIT 10;
