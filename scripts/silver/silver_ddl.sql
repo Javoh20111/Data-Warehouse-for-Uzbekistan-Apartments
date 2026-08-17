@@ -10,7 +10,7 @@ Purpose:
 ===================================================================
 */
 
-CREATE TABLE silver.olx_apartments_info (
+CREATE TABLE silver.olx_apartments_info(
     listing_id TEXT PRIMARY KEY,
     price_usd NUMERIC(12,2) NOT NULL,
     price_per_sqr NUMERIC(10,2),
