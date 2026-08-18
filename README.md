@@ -24,6 +24,7 @@ reporting.
 
 ```text
 DataWarehouse/
+├── charts/               # Charts & Insights
 ├── dataset/              # Source CSV data
 ├── docs/                 # Diagrams and project documentation
 ├── scripts/              # SQL scripts for the data warehouse
@@ -40,6 +41,8 @@ Main files:
 - `dataset/database.csv` contains the apartment listing data.
 - `docs/` contains ERD and architecture diagrams.
 
+Charts: [check out my findings](charts)
+
 ## Technologies
 - SQL
 - PostgreSQL
@@ -50,3 +53,14 @@ Main files:
 ![alt text](docs/Medallion_Architecture.drawio.png)
 ## Data Modeling (gold)
 ![alt text](docs/gold_data_medeling.png)
+
+## About Me
+
+Hi, I'm, Javohir Eshonov, a data enthusiast interested in data engineering, SQL, PostgreSQL,
+and building useful analytics solutions. This project shows my understanding
+of data warehouse design, medallion architecture, data modeling, and data
+quality checks.
+
+You can connect with me here:
+- LinkedIn: [linkedin.com/in/javohir-eshonov/](https://www.linkedin.com/in/javohir-eshonov/)
+- Email: [eshonovjavohir92@gmail.com](mailto:eshonovjavohir92@gmail.com)
