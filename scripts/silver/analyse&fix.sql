@@ -137,7 +137,8 @@ BEGIN
         nearby_supermarket,
         near_metro_mentioned
     FROM
-        bronze.olx_apartments_info;
+        bronze.olx_apartments_info
+    WHERE price_usd > 0;
 
     end_time := NOW();
     RAISE NOTICE 'Load duration: % seconds',
@@ -152,4 +153,3 @@ $$;
 
 CALL silver.load_silver();
 
-SELECT * from silver.olx_apartments_info LIMIT 10;
