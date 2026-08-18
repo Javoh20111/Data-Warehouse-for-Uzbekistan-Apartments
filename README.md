@@ -41,11 +41,13 @@ Main files:
 - `dataset/database.csv` contains the apartment listing data.
 - `docs/` contains ERD and architecture diagrams.
 
-Charts: [check out my findings](charts)
+Charts: [check out my findings](charts)  
+**Note on charts:** The visualizations in this folder were generated with pandas during early data exploration, before the warehouse's bronze/silver/gold pipeline was finalized. They're kept here as a record of that initial exploratory pass, but the numbers may not reflect later data-quality fixes (e.g. price correction, deduplication) applied in the SQL layer. For up-to-date analysis, see the SQL queries in analytics/ run against gold.vw_listing_report.
 
 ## Technologies
 - SQL
 - PostgreSQL
+- Pandas
 - Data Modeling
 - Git & GitHub
 - Draw.io
