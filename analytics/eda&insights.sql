@@ -64,9 +64,65 @@ ORDER BY median_usd_per_sqr ASC
 LIMIT 5;
 
 --
-WITH median_price_per_sqr_by_region AS(
-    
+
+
+
+-- Purpose: Calculates the median price per square unit for 'Sale' listings by region and categorizes each region as 'Above Average' or 'Below Average' relative to the overall average across all regions.
+
+SELECT
+    region,
+    median_usd_per_sqr,
+    -- OVER() clause allows comparing each row's median against the global average across all regions
+    CASE 
+        WHEN median_usd_per_sqr > AVG(median_usd_per_sqr) OVER() THEN 'Above Average'
+        ELSE 'Below Average'
+    END AS price_per_sqr_category,
+    AVG(median_usd_per_sqr) OVER() AS average_price
+FROM (
+    SELECT
+        dl.region AS region,
+        PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY fl.price_per_sqr) AS median_usd_per_sqr
+    FROM gold.fact_listing fl
+    LEFT JOIN gold.dim_location dl
+        ON fl.location_dim_id = dl.location_dim_id
+    WHERE fl.listing_type = 'Sale'
+    GROUP BY dl.region
+) AS regional_medians
+ORDER BY median_usd_per_sqr DESC;
+
+
+
+-- Purpose: Calculates the percentage breakdown of 'Sale' vs. 'Rent' listings for each region relative to total regional inventory.
+
+WITH sale_percentage_per_region AS (
+    SELECT
+        dl.region AS region,
+        COUNT(*) AS sale_count
+    FROM gold.fact_listing fl
+    LEFT JOIN gold.dim_location dl
+        ON fl.location_dim_id = dl.location_dim_id
+    WHERE fl.listing_type = 'Sale'
+    GROUP BY dl.region
+), rent_percentage_per_region AS (
+    SELECT
+        dl.region AS region,
+        COUNT(*) AS rent_count
+    FROM gold.fact_listing fl
+    LEFT JOIN gold.dim_location dl
+        ON fl.location_dim_id = dl.location_dim_id
+    WHERE fl.listing_type = 'Rent'
+    GROUP BY dl.region
 )
+SELECT
+    COALESCE(sp.region, rp.region) AS region,
+    -- Multiply by 1.0 to force float division and COALESCE NULLs for regions missing sales or rentals
+    CONCAT(((COALESCE(sp.sale_count, 0) * 1.0 / (COALESCE(sp.sale_count, 0) + COALESCE(rp.rent_count, 0))) * 100)::INTEGER, '%') AS sales_percentage,
+    CONCAT(((COALESCE(rp.rent_count, 0) * 1.0 / (COALESCE(sp.sale_count, 0) + COALESCE(rp.rent_count, 0))) * 100)::INTEGER, '%') AS rent_percentage
+FROM sale_percentage_per_region sp
+-- FULL OUTER JOIN ensures regions with only sales or only rentals are preserved
+FULL OUTER JOIN rent_percentage_per_region rp
+    ON sp.region = rp.region
+ORDER BY sales_percentage DESC;
 
 
 
